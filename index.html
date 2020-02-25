@@ -1,0 +1,190 @@
+<!--Akeel Henry
+    816012676
+    Credit to W3Schools for search function
+-->
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="icon" href="pokeball.png" sizes="16x16" type="image/png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Poke Dextr</title>
+    <style>
+      ::-webkit-scrollbar {
+        width: 10px;
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: rgba(244, 67, 54, 0.849); 
+      }
+
+      .nav-wrapper{
+        padding-left: 20px;
+      }
+      .nav-wrapper img{
+        height: 64px; 
+        padding-right: 10px;
+      }
+
+      main{
+        display: flex; 
+        padding: 20px;
+      }
+
+      #listing{
+        max-height: 600px; 
+        overflow: scroll; 
+        overflow-x: hidden; 
+        margin-left: 10px; 
+        flex: 0 0 25%; 
+        text-transform: capitalize;
+      }
+
+      #leftdiv{
+        width: 25%;
+      }
+
+      #result{
+        margin-top: 5%;
+      }
+
+      .card-image{
+        margin: auto; 
+        background-color: #F44336;
+      }
+
+      .white-text{
+        text-transform: capitalize;
+      }
+      
+
+    </style>
+  </head>
+
+  <body>
+    <nav >
+      <div class="nav-wrapper red">
+        <img src="pokeball.png" alt="pokeball"/>
+        <a href="#" class="brand-logo">Poke Dextr</a>
+        <ul class="right">
+          <li><a href="index.html"><i class="material-icons left">list</i>Listing</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <main>
+      <div id="leftdiv">
+        <!--Search Bar-->
+        <div class="row">
+          <form class="col s12">
+            <div class="row">
+              <div class="input-field col s6" style="width: 100%; margin-bottom: -40px; margin-top: -10px;">
+                <i class="material-icons prefix">search</i>
+                <textarea id="icon_prefix2" onkeyup="search()" class="materialize-textarea"></textarea>
+                <label for="icon_prefix2"></label>
+              </div>
+            </div>
+          </form>
+        </div>
+        <!--Search Bar End-->
+
+        <ul id="listing" class="collection"></ul>
+      </div>  
+
+      <div class="row" id="result">
+        <div class="col s12 m7" style="width: auto; margin: auto;">
+          <div class="card" id="cardimage">
+            
+          </div>
+        </div>
+      </div>
+
+    </main>
+   
+    <script>
+
+        async function getPokemon(pokemonName){
+          //given a pokemon name performs an ajax requests querying the pokemon's data and pass it to displayPokemon()
+          try{
+              let response = await fetch("https://pokeapi.co/api/v2/pokemon/".concat(pokemonName));
+              let pokeDetails = await response.json();
+              displayPokemon(pokeDetails);
+          }catch(e){
+            console.log(e);
+          }
+        }
+
+        async function getListing(){
+          //performs an ajax request to the spcified url to get pokemon data then pass it to displayListing()
+          try{
+              let response = await fetch("https://pokeapi.co/api/v2/pokemon/?limit=50&offset=50");
+              let pokeList = await response.json();
+
+              pokeList = pokeList.results;
+              displayListing(pokeList);
+          }catch(e){
+            console.log(e);
+          }
+        }
+
+        function displayListing(pokeList){
+           //Renders a list of pokemon links to the page
+
+           let list = document.querySelector('#listing');
+
+           for(let item of pokeList){
+             list.innerHTML += `<li class="center-align"><a id='${item.name}' class='collection-item' href='#' onclick='getPokemon("${item.name}")'><span class="red-text">${item.name}</span></a></li>`;
+           }
+        }
+
+        function displayPokemon(pokeDetails){
+
+          //renders details of the specified pokemon onto the page
+          
+          let cardimage = document.querySelector('#cardimage');
+
+          cardimage.innerHTML = ""
+        
+
+          cardimage.innerHTML += `<div class="card-image">
+                                    <img src="${pokeDetails.sprites.front_default}" alt="pokemon" style="width: 300px;">
+                                    <br/>
+                                    <span class="card-title"><span class="white-text">Name: ${pokeDetails.name}</span></span>
+                                  </div>
+                                  <div class="card-content">
+                                    <p>ID: ${pokeDetails.id}</p>
+                                    <p>Weight: ${pokeDetails.weight}</p>
+                                    <p>Height: ${pokeDetails.height}</p>
+                                    <p>Type1: <span Style="text-transform: capitalize;"">${pokeDetails.types[0].type.name}</span></p>
+                                  </div>`
+        }
+
+        function search() {
+          // Declare variables
+          var input, filter, ul, li, a, i, txtValue;
+          input = document.getElementById('icon_prefix2');
+          filter = input.value.toUpperCase();
+          ul = document.getElementById("listing");
+          li = ul.getElementsByTagName('li');
+
+          // Loop through all list items, and hide those who don't match the search query
+          for (i = 0; i < li.length; i++) {
+            a = li[i].getElementsByTagName("a")[0];
+            txtValue = a.textContent || a.innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+              li[i].style.display = "";
+            } else {
+              li[i].style.display = "none";
+            }
+          }
+        }
+
+        getListing();
+       
+    </script>
+
+
+  </body>
+</html>
